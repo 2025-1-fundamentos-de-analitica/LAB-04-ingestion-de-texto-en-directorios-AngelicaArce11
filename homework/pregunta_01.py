@@ -4,11 +4,14 @@
 """
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
-
+import os
+import glob
+import fileinput
+import pandas as pd
 
 def pregunta_01():
     """
-    La información requerida para este laboratio esta almacenada en el
+    La información requerida para este laboratorio esta almacenada en el
     archivo "files/input.zip" ubicado en la carpeta raíz.
     Descomprima este archivo.
 
@@ -71,3 +74,36 @@ def pregunta_01():
 
 
     """
+    # Aqui guardamos los datos de los archivos
+    dataTest = []
+    dataTrain = []
+
+    # Tenemos los diferentes target
+    target = ['negative', 'neutral', 'positive']
+
+    for t in target:
+        # Obtenemos los nombres de los archivos de una ruta especifica
+        filesTest = glob.glob(f"files/input/test/{t}/*")
+        filesTrain = glob.glob(f"files/input/train/{t}/*")
+
+        # Abrimos cada uno de los archivos, leemos cada linea y la añadimos a la data con su respectivo target
+        with fileinput.input(files=filesTest) as f:
+            for line in f:
+                dataTest.append({'phrase': line, 'target': t})
+
+        with fileinput.input(files=filesTrain) as f:
+            for line in f:
+                dataTrain.append({'phrase': line, 'target': t})
+    
+    # Creamos la carpeta de output
+    if os.path.exists('files/output'):
+        os.rmdir('files/output')
+    
+    os.makedirs('files/output')
+
+    # Dataframe resultante
+    dfTrain = pd.DataFrame(dataTrain)
+    dfTrain.to_csv('files/output/train_dataset.csv', columns=['phrase', 'target'], index=False, encoding='utf-8')
+
+    dfTest = pd.DataFrame(dataTest)
+    dfTest.to_csv('files/output/test_dataset.csv', columns=['phrase', 'target'], index=False, encoding='utf-8')
