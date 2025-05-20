@@ -96,10 +96,7 @@ def pregunta_01():
                 dataTrain.append({'phrase': line, 'target': t})
     
     # Creamos la carpeta de output
-    if os.path.exists('files/output'):
-        os.rmdir('files/output')
-    
-    os.makedirs('files/output')
+    os.makedirs('files/output', exist_ok=True)
 
     # Dataframe resultante
     dfTrain = pd.DataFrame(dataTrain)
